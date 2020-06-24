@@ -5,28 +5,28 @@ import os
 import time
 from datetime import datetime, timedelta
 
+# # TODO:
+# remove not used imports
+# searched string is hardcoded. fix that
+# make it so the script rips ~10 second before the subtitle and 10 seconds after
+# implement overlaping chunks recognition
+
+path = os.getcwd() + '/../subs/' # subtitles location
 file_names = []
 
-path = os.getcwd() + '/../subs/' # location of subtitles
+for file in os.listdir(path):
+    file_names.append(file)
+file_names.sort() # not necessary, but it makes the generated script look better
 
-for file_name in os.listdir(path):
-    file_names.append(file_name)
-
-file_names.sort() # not necessary, but it makes generated files look better
-
-data =[];
+data =[]
 
 for f in file_names:
-    file = open(path+f)
+    file = open(path + f)
     for i, line in enumerate(file):
         if re.search('(pesky|bird)', line):
-            data.append([f, prev[0:8], prev[17:25], line])
-        prev=line
+            data.append({'fname': f, 'beg': prev[0:8], 'end': prev[17:25], 'desc': line}) # get file name, time stamps and desciption
+        prev = line
 
-for d in data:
-    print(d)
-#
-#
 # datestring1 = data[-1][1]
 # datestring2 = data[-1][2]
 #
@@ -35,9 +35,9 @@ for d in data:
 # #!!!! start = time.mktime(t1)-time.mktime(t2)
 # #!!!! print
 #
-# out_file = open('script.sh', 'w')
+# out_file = open('rip.sh', 'w')
 # out_list = open('list.txt', 'w')
-# for i,t in enumerate(data):
+# for (i, t) in enumerate(data):
 #     name = t[0][:2]
 #     vid_fil = 'out/'+ name + '-' + str(i)+'.mp4'
 #     out_list.write('file \'' + vid_fil + "'\n")
