@@ -4,6 +4,5 @@
 # is an URL of a youtube playlist/ video you want to edit
 
 python gen-script.py
-bash rip.bash
+bash rip.sh
 ffmpeg -f concat -safe 0 -i list.txt -c copy output.mp4 # splice all the clips
-rm list.txt rip.sh # cleanup
