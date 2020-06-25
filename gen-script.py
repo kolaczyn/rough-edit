@@ -19,11 +19,14 @@ def clamps(t):
         return t-timedelta(seconds=sides)
 
 # if
-# def merge_overlap(data): # if two chunks overlap, they get merged
-#     for (i, d) in enumerate(data):
-#         if(prev['fname']==d['fname']):
-#             if
-#         prev = d
+def merge_overlap(data): # if two chunks overlap, they get merged
+    prev=data[-1] # it should work for nwo, but i should find a better solution
+    #this also works, but for surely there's a better way to do this
+    for cur in data:
+        if prev['fname']==cur['fname'] and prev['end'] > cur['beg'] - timedelta(seconds=sides): # that means we have to merge them
+            cur['desc']+='@'
+            prev['end']=cur['end']
+        prev = cur
 
 # implement overlaping chunks recognition
 
@@ -44,23 +47,26 @@ for i, f in enumerate(file_names):
             'fname':f,
             'beg':clamps(timedelta(minutes = int(prev[3  :5]), seconds=int(prev[6:  8]))),
             'end':clamps(timedelta(minutes = int(prev[20:22]), seconds=int(prev[23:25]))),
-            'desc':line}) # get file name, time stamps and desciption
+            'desc':line[:-1]}) # get file name, time stamps and desciption
         if i%4 == 1:
             prev = line # a timestamp line
+
+
+merge_overlap(data)
+
 
 file_list = open('list.txt', 'w')
 file_rip = open('rip.sh', 'w')
 file_rip.write('#!/bin/bash\n')
 for (i, d) in enumerate(data):
+      if d['desc'][-1]=='@':
+          continue
       name = d['fname'][:2] # get a name without an extension
       outname ="../out/{}-{:0>2}.mp4".format(name, i)
 
-      # refactor time thingy and get rid of hardcoding
       file_list.write("file '{}'\n".format(outname))
       print(d['end']-d['beg'])
       file_rip .write('ffmpeg -ss {} -i ../original/{}.mp4 -to 0{} -c copy {}\n'.format(d['beg'], name, d['end']-d['beg']+timedelta(seconds=6),outname))
-      # file_rip .write('ffmpeg -ss {} -i ../original/{}.mp4 -to 00:00:12 -c copy {}\n'.format(d['beg'], name, outname))
-
 
 
 file_debug = open('debug.txt', 'w')
