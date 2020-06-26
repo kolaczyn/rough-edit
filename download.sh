@@ -33,7 +33,8 @@ for filename in *; do
   file="${filename%.*}";
 	in="${file}.vtt"
 	out="${file}.srt"
-	ffmpeg -i $in $out
-	done
+	ffmpeg -i "${in}" "${out}"
+done
 
-# rename
+#remove old subs
+rm *vtt
