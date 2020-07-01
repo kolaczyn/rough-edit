@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# it converts the subs from .vtt to .srt
+# it converts subs from .vtt to .srt
 
 for filename in ../subs/*; do
 	file="${filename%.*}";
