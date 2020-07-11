@@ -8,13 +8,14 @@
 # make program organize file
 # add alternative versions
 # passing arguments into program; get rid of hardcoded values
-# fix def write_debug_file(data), so it generates correct values
+# add debug file, I removed the old one because it wasnt working correctly
 
 # check if you tell ffmpeg after the video is over - how does it handle it?
 # if yes, add r_clamp(.). I would have to get the length of the videos
 
 import re
 import os
+import sys
 from datetime import timedelta
 
 # left clamps. used to make sure that eg. 00:00:02 doesn't become 23:59:52
@@ -66,25 +67,26 @@ def write_list_rip(data):
             file_list.write("file '{}'\n".format(outname))
             delta = d['end']-d['beg']
 
-            # painfully slow
-            # file_rip.write('ffmpeg -i ../original/{}.mp4 -ss 0{} -t 0{} -async 1 {}\n'.format(name, d['beg'], delta ,outname)) # slow but more accurate
+            if sys.argv[2] == 'slow':
+                file_rip.write('ffmpeg -i ../original/{}.mp4 -ss 0{} -t 0{} -async 1 {}\n'.format(name, d['beg'], delta ,outname)) # slow but more accurate
 
-            # very fast, but there are still 'bugs'
-            true_beg = l_clamps(d['beg'], back)
-            d1 = d['beg'] - true_beg # we have to do it his was just in case the clip is at the beginning
-            file_rip.write('ffmpeg -ss 0{} -i ../original/{}.mp4 -ss 0{} -t 0{} -c copy {}\n'.format(true_beg, name, d1, delta, outname)) # fast but not accurate
+            elif sys.argv[2] =='fast':
+                true_beg = l_clamps(d['beg'], back)
+                d1 = d['beg'] - true_beg # we have to do it his was just in case the clip is at the beginning
+                file_rip.write('ffmpeg -ss 0{} -i ../original/{}.mp4 -ss 0{} -t 0{} -c copy {}\n'.format(true_beg, name, d1, delta, outname)) # fast but not accurate
 
 
-# generates a debug file - I can see how the clips are laid out
-# at the moment it doesnt work correcty. fix that
-def write_debug_file(data):
-    file_debug = open('debug.txt', 'w')
-    for d in data:
-        if d:
-            file_debug.write('{}\t{}\t{}\t{}\n'.format(d['fname'][:2], d['beg'], d['end'], d['desc']))
+def validate_arguments():
+    if not len(sys.argv) == 3:
+        print('Error: incorrect number of arguments.')
+        sys.exit()
+    if not sys.argv[2] in ['slow', 'fast']:
+        print('Error: second argument can be only one of the following: slow, fast')
+        sys.exit()
 
 if __name__ == "__main__":
-    search = '(pesky bird)' # the searched phrase
+    validate_arguments()
+    search = sys.argv[1] # the searched phrase
     sides = timedelta(seconds=10) # time we cut on both sides
     back  = timedelta(seconds=60) # how much do we want to go to get better keyframes. dunno how to explain this in two sentences
     path = os.getcwd() + '/../subs/' # subtitles location
@@ -93,4 +95,3 @@ if __name__ == "__main__":
     data = generate_splice_data(file_names)
     merge_overlap(data)
     write_list_rip(data)
-    write_debug_file(data)
