@@ -13,6 +13,7 @@
 import re
 import os
 import sys
+import subprocess
 from datetime import timedelta
 
 # it's used to make sure that eg. 00:00:02 doesn't become 23:59:52
@@ -51,7 +52,7 @@ def generate_splice_data(file_names):
 
 # it generates rip.sh - script which cut nessecsary part
 # i dunno how to spell nessessery
-def write_list_rip(data):
+def write_list_rip(data, mode):
     file_list = open('list.txt', 'w')
     file_rip = open('rip.sh', 'w')
     file_rip.write('#!/bin/bash\n')
@@ -63,31 +64,53 @@ def write_list_rip(data):
             file_list.write("file '{}'\n".format(outname))
             delta = d['end']-d['beg']
 
-            if sys.argv[2] == 'slow':
+            if mode == 'slow':
                 file_rip.write('ffmpeg -i ../original/{}.mp4 -ss 0{} -t 0{} -async 1 {}\n'.format(name, d['beg'], delta ,outname)) # slow but more accurate
 
-            elif sys.argv[2] =='fast':
+            elif mode =='fast':
                 true_beg = left_clamps(d['beg'], back)
                 d1 = d['beg'] - true_beg # we have to do it his was just in case the clip is at the beginning
                 file_rip.write('ffmpeg -ss 0{} -i ../original/{}.mp4 -ss 0{} -t 0{} -c copy {}\n'.format(true_beg, name, d1, delta, outname)) # fast but not accurate
 
 
-def validate_arguments():
-    if not len(sys.argv) == 3:
+def handle_arguments():
+    if not len(sys.argv) in [3, 4]:
         print('Error: incorrect number of arguments.')
         sys.exit()
+
     if not sys.argv[2] in ['slow', 'fast']:
         print('Error: second argument can be only one of the following: slow, fast')
         sys.exit()
 
+    arguments = {'search': sys.argv[1], 'mode': sys.argv[2]}
+    
+    if (len(sys.argv)== 4):
+        try:
+            arguments.update({'sides': int(sys.argv[3])})
+        except:
+            print('Error: third argument is not a number')
+            sys.exit()
+    else:
+        arguments.update({'sides': 10})
+        
+
+    return arguments 
+
 if __name__ == "__main__":
-    validate_arguments()
-    search = sys.argv[1] # the searched phrase
-    sides = timedelta(seconds=10) # time we cut on both sides
+    arguments = handle_arguments()
+    search = arguments['search'] # the searched phrase
+
+    os.chmod('clean.sh', 0o755)
+    subprocess.call('./clean.sh', shell=True) # get rid of the old files
+
+    sides = timedelta(seconds=arguments['sides']) # time we cut on both sides
     back  = timedelta(seconds=60) # how much do we want to go to get better keyframes. dunno how to explain this in two sentences
     path = os.getcwd() + '/../subs/' # subtitles location
 
     file_names = sorted(os.listdir(path))
     data = generate_splice_data(file_names)
     merge_overlap(data)
-    write_list_rip(data)
+    write_list_rip(data, arguments['mode'])
+
+    os.chmod('rip.sh', 0o755)
+    subprocess.call('./rip.sh', shell=True)
