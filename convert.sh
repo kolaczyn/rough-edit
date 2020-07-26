@@ -7,4 +7,6 @@ for filename in ../subs/*; do
 	in="${file}.vtt"
 	out="${file}.srt"
 	ffmpeg -i $in $out
-	done	
+	done
+
+rm ../subs.*vtt	
