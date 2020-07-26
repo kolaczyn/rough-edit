@@ -10,3 +10,4 @@ for filename in ../subs/*; do
 	done
 
 rm ../subs.*vtt	
+echo "convert.sh finished its job"

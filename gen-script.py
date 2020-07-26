@@ -23,7 +23,7 @@ def left_clamps(t, delta):
     else:
         return t - delta
 
- # if two chunks overlap, they get merged
+# if two chunks overlap, they get merged
 def merge_overlap(data):
     prev=data[-1] # probably there's a better way to start this loop
     for i, cur in enumerate(data):
@@ -39,14 +39,14 @@ def generate_splice_data(file_names):
     for i, f in enumerate(file_names):
         file = open(path + f)
         for i, line in enumerate(file):
-            if i%4 == 2 and re.search(search, line): # we only need to check lines which contain text, hence the first condition
+            if line[0:2] == '00':
+                prev = line # a timestamp line
+            elif re.search(search, line): # we only need to check lines which contain text, hence the first condition
                 data.append({
                 'fname':f,                                                                                  #file name
                 'beg':left_clamps(timedelta(minutes = int(prev[3  :5]), seconds=int(prev[6:  8])), sides),  #beginning timestamp
                 'end':timedelta(minutes = int(prev[20:22]), seconds=int(prev[23:25])) + sides,              #ending timestamp
                 'desc':line[:-1]})                                                                          #said lines
-            if i%4 == 1:
-                prev = line # a timestamp line
     return data
 
 
@@ -76,6 +76,7 @@ def write_list_rip(data, mode):
 def handle_arguments():
     if not len(sys.argv) in [3, 4]:
         print('Error: incorrect number of arguments.')
+        print('Arguments: (searched phrase} (slow/fast) (sides, e.g. 5 or nothing)')
         sys.exit()
 
     if not sys.argv[2] in ['slow', 'fast']:
