@@ -58,7 +58,7 @@ def write_list_rip(data, mode):
     file_rip.write('#!/bin/bash\n')
     for (i, d) in enumerate(data):
         if (d):
-            name = d['fname'][:2] # get a name without an extension
+            name = d['fname'].split('.')[0] # get a name without an extension
             outname ="../out/{}-{:0>2}.mp4".format(name, i)
 
             file_list.write("file '{}'\n".format(outname))

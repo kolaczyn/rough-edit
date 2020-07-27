@@ -9,5 +9,5 @@ for filename in ../subs/*; do
 	ffmpeg -i $in $out
 	done
 
-rm ../subs.*vtt	
+rm ../subs/*vtt	
 echo "convert.sh finished its job"
