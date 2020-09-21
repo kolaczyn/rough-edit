@@ -1,4 +1,7 @@
+out/
+subs/
 list.txt
 rip.sh
 debug.txt
 output.mp4
+.vscode
