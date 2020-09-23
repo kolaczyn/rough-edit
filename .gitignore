@@ -1,7 +1,9 @@
 out/
 subs/
 list.txt
-rip.sh
+rip*
 debug.txt
 output.mp4
 .vscode
+sumout/
+out*
