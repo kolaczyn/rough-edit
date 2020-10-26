@@ -3,7 +3,7 @@ from datetime import timedelta
 import os
 
 
-def escapeString(string):
+def escape_string(string):
     # escapes chars like ' and &
     # strings I have to replace to make the * work
     for sign in [' ', "'", '"', '(', ')', '&']:
@@ -11,10 +11,10 @@ def escapeString(string):
     return string
 
 
-def strToTimedelta(string):
+def str_to_timedelta(string):
     # TODO later: change findall to get rid of those [0]s
-    timeRegexFormat = r"(\d{2}):(\d{2}):(\d{2})\.(\d{3})"
-    results = re.findall(timeRegexFormat, string)
+    time_regex_format = r"(\d{2}):(\d{2}):(\d{2})\.(\d{3})"
+    results = re.findall(time_regex_format, string)
     hours, minutes, seconds, milliseconds = results[0]
     return timedelta(hours=int(hours),
                      minutes=int(minutes),
@@ -22,15 +22,15 @@ def strToTimedelta(string):
                      milliseconds=int(milliseconds))
 
 
-def generateRegex(prase):
-    praseArray = prase.split(" ")
-    timeRegex = r"(\d{2}:\d{2}:\d{2}.\d{3})"
-    outRegex = ""
+def generate_regex(prase):
+    phrase_array = prase.split(" ")
+    time_regex = r"(\d{2}:\d{2}:\d{2}.\d{3})"
+    out_regex = ""
 
-    for word in praseArray:
-        outRegex += f"<{timeRegex}><c> ({word})</c>"
-    outRegex += f"<{timeRegex}>"
+    for word in phrase_array:
+        out_regex += f"<{time_regex}><c> ({word})</c>"
+    out_regex += f"<{time_regex}>"
 
-    print(outRegex)
-    return outRegex
+    print(out_regex)
+    return out_regex
     # regex = f"<{timeRegex}><c> ({text})</c><{timeRegex}><c> ({text})</c><{timeRegex}>"

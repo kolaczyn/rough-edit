@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 
-def stringToTimedelta(time):
+def string_to_timedelta(time):
     time = time.split(':')
     return timedelta(hours=int(time[0]), minutes=int(time[1]), seconds=int(time[2]))
 
@@ -18,8 +18,8 @@ with open('rip2.sh') as file:
 
     for d in data:
         print(d)
-        d[1] = stringToTimedelta(d[1])
-        d[2] = stringToTimedelta(d[2])
+        d[1] = string_to_timedelta(d[1])
+        d[2] = string_to_timedelta(d[2])
 
     cur = timedelta(seconds=0)
     with open('rip3.sh', 'w') as outfile:

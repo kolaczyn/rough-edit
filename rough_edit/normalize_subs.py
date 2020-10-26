@@ -2,7 +2,7 @@ import os
 import re
 
 
-def checkConditions(line):
+def check_conditions(line):
     # tells if the line passes some regex comparasions
     conditions = [
         '^WEBVTT$',
@@ -17,11 +17,11 @@ def checkConditions(line):
     return True
 
 
-for fileName in os.listdir('../../subs'):
-    print(fileName)
-    with open(f'../../subs/{fileName}', 'r') as infile:
-        with open(f'../../out-subs/{fileName}', 'w') as outfile:
+for file_name in os.listdir('../../subs'):
+    print(file_name)
+    with open(f'../../subs/{file_name}', 'r') as infile:
+        with open(f'../../out-subs/{file_name}', 'w') as outfile:
             for line in infile:
-                if checkConditions(line):
+                if check_conditions(line):
                     outfile.write(line)
                     # .replace('\n', ''))
