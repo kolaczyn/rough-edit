@@ -1,10 +1,9 @@
 import re
 import os
-from datetime import timedelta
-import json
 
 from rough_edit.utils import str_to_timedelta, escape_string, generate_regex
 from rough_edit.file_writers import ffmpeg_command, mpv_command
+from rough_edit.handle_arguments import handle_arguments
 
 
 if __name__ == '__main__':
@@ -12,11 +11,9 @@ if __name__ == '__main__':
     subs_dir = f"{baseDir}subs/"
     outDir = f"{baseDir}out/"
 
-    phrase = "I don't know"
+    phrase, padding_left, padding_right = handle_arguments()
     regex = generate_regex(phrase)
 
-    padding_left = timedelta(seconds=3)
-    padding_right = timedelta(seconds=3)
     count = 0
 
     with open('rip.sh', 'w') as rip_file:

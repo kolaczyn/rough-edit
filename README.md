@@ -1,4 +1,4 @@
-# Rough Editor
+# The README is not accurate at the moment!
 
 ## Description
 
